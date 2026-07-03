@@ -153,3 +153,20 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
   block_dn_summary <- block_dn_summary |>
     left_join(block_dn_date)
 }
+
+calc_breeding_season_coverage <- function(x, y) {
+  x |>
+    mutate(
+      observation_month = month(observation_datetime, abbr = TRUE, label = TRUE)
+    ) |>
+    distinct(pba3_block, observation_month) |>
+    collect() |>
+    inner_join(
+      y |> filter(season == "Breeding"),
+      by = c("observation_month" = "month")
+    ) |>
+    summarize(
+      breeding_season_months_covered = n_distinct(observation_month),
+      .by = pba3_block
+    )
+}

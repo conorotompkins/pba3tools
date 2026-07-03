@@ -585,20 +585,10 @@ summarize_season <- function(
   )
 
   print("calculating breeding season coverage")
-  block_breeding_season_coverage <- checklist_df |>
-    mutate(
-      observation_month = month(observation_datetime, abbr = TRUE, label = TRUE)
-    ) |>
-    distinct(pba3_block, observation_month) |>
-    collect() |>
-    inner_join(
-      seasons |> filter(season == "Breeding"),
-      by = c("observation_month" = "month")
-    ) |>
-    summarize(
-      breeding_season_months_covered = n_distinct(observation_month),
-      .by = pba3_block
-    )
+  block_breeding_season_coverage <- calc_breeding_season_coverage(
+    checklist_df,
+    seasons
+  )
 
   print("calculating nocturnal species coded")
   block_nocturnal_species_coded <- checklist_df |>
