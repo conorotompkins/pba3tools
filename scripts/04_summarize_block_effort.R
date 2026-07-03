@@ -575,15 +575,7 @@ summarize_season <- function(
   block_effort <- calc_block_effort(checklist_df)
 
   print("calculating species codes")
-  block_species_coded <- checklist_df |>
-    collect() |>
-    distinct(pba3_block, common_name, breeding_category_desc, breeding_rank) |>
-    group_by(pba3_block, common_name) |>
-    filter(breeding_rank == max(breeding_rank)) |>
-    ungroup() |>
-    count(pba3_block, breeding_category_desc, breeding_rank) |>
-    select(-breeding_rank) |>
-    pivot_wider(names_from = breeding_category_desc, values_from = n)
+  block_species_coded <- calc_species_coded(checklist_df)
 
   print("calculating diurnal/nocturnal effort")
 
