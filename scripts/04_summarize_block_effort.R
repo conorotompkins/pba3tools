@@ -578,107 +578,11 @@ summarize_season <- function(
   block_species_coded <- calc_species_coded(checklist_df)
 
   print("calculating diurnal/nocturnal effort")
-
-  block_dn_raw <- checklist_df |>
-    distinct(
-      pba3_block,
-      checklist_id,
-      observer_id,
-      observation_datetime,
-      longitude,
-      latitude,
-      duration_minutes
-    ) |>
-    collect() |>
-    left_join(ob_dt_fixed) |>
-    mutate(
-      observation_datetime = case_when(
-        !is.na(observation_datetime_fixed) ~ observation_datetime_fixed, #replace inconsistent start times with modal start time for the checklist
-        .default = observation_datetime
-      )
-    ) |>
-    select(-c(observation_datetime_fixed, observer_id)) |>
-    #for each checklist, find max of duration minutes and effort distance
-    summarize(
-      observation_datetime = min(observation_datetime, na.rm = TRUE),
-      duration_minutes = max(duration_minutes, na.rm = TRUE),
-      .by = c(pba3_block, checklist_id, longitude, latitude)
-    ) |>
-    mutate(
-      #if all checklists for a block have NA duration_minutes, max(duration_minutes) is -Inf. Replace with 0
-      duration_minutes = case_when(
-        duration_minutes == -Inf ~ 0,
-        .default = duration_minutes
-      )
-    ) |>
-    left_join(
-      location_sunrise_sunset,
-      by = join_by(
-        longitude,
-        latitude,
-        observation_datetime
-      )
-    ) |>
-    mutate(
-      flag_is_diurnal_checklist = between(
-        observation_datetime,
-        sunrise - minutes(40),
-        sunset + minutes(20)
-      ),
-      checklist_type = case_when(
-        flag_is_diurnal_checklist == TRUE ~ "diurnal",
-        flag_is_diurnal_checklist == FALSE ~ "nocturnal",
-        is.na(flag_is_diurnal_checklist) ~ "unknown"
-      )
-    ) |>
-    select(-flag_is_diurnal_checklist)
-
-  block_dn_summary <- block_dn_raw |>
-    summarize(
-      duration_hours = sum(duration_minutes, na.rm = TRUE) / 60,
-      .by = c(pba3_block, checklist_type)
-    ) |>
-    pivot_wider(
-      names_from = checklist_type,
-      values_from = duration_hours,
-      names_prefix = "duration_hours_"
-    ) |>
-    select(
-      pba3_block,
-      duration_hours_diurnal,
-      duration_hours_nocturnal,
-      duration_hours_unknown
-    ) |>
-    mutate(
-      duration_hours_diurnal = coalesce(duration_hours_diurnal, 0),
-      duration_hours_nocturnal = coalesce(duration_hours_nocturnal, 0),
-      duration_hours_unknown = coalesce(duration_hours_unknown, 0)
-    )
-
-  block_dn_date <- block_dn_raw |>
-    mutate(
-      observation_date = as_date(observation_datetime)
-    ) |>
-    summarize(
-      duration_hours = sum(duration_minutes, na.rm = TRUE) / 60,
-      .by = c(pba3_block, checklist_type, observation_date)
-    ) |>
-    pivot_wider(
-      names_from = checklist_type,
-      values_from = duration_hours,
-      names_prefix = "duration_hours_"
-    ) |>
-    select(
-      pba3_block,
-      observation_date,
-      duration_hours_diurnal,
-      duration_hours_nocturnal,
-      duration_hours_unknown
-    ) |>
-    group_nest(pba3_block, .key = "effort_breakdown")
-
-  block_dn_summary <- block_dn_summary |>
-    left_join(block_dn_date)
+  block_nocturnal_diurnal <- calc_nocturnal_diurnal_effort(
+    checklist_df,
+    ob_dt_fixed,
+    location_sunrise_sunset
+  )
 
   print("calculating breeding season coverage")
   block_breeding_season_coverage <- checklist_df |>
@@ -716,7 +620,7 @@ summarize_season <- function(
     block_birders,
     block_effort,
     block_species_coded,
-    block_dn_summary,
+    block_nocturnal_diurnal,
     block_breeding_season_coverage,
     block_nocturnal_species_coded
   )
