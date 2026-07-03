@@ -22,3 +22,19 @@ calc_atlasers <- function(x) {
     separate_rows(observer_id, sep = ",") |>
     summarize(birders = n_distinct(observer_id), .by = pba3_block)
 }
+
+calc_block_effort <- function(x) {
+  x |>
+    distinct(pba3_block, checklist_id, duration_minutes, effort_distance_km) |> #for each checklist, find max of duration minutes and effort distance
+    summarize(
+      duration_minutes = max(duration_minutes, na.rm = TRUE),
+      effort_distance_km = max(effort_distance_km, na.rm = TRUE),
+      .by = c(pba3_block, checklist_id)
+    ) |>
+    summarize(
+      duration_hours_total = sum(duration_minutes, na.rm = TRUE) / 60,
+      effort_distance_km = sum(effort_distance_km, na.rm = TRUE),
+      .by = pba3_block
+    ) |>
+    collect()
+}

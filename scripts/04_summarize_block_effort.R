@@ -572,19 +572,7 @@ summarize_season <- function(
   block_birders <- calc_atlasers(checklist_df)
 
   print("calculating effort summary")
-  block_effort <- checklist_df |>
-    distinct(pba3_block, checklist_id, duration_minutes, effort_distance_km) |> #for each checklist, find max of duration minutes and effort distance
-    summarize(
-      duration_minutes = max(duration_minutes, na.rm = TRUE),
-      effort_distance_km = max(effort_distance_km, na.rm = TRUE),
-      .by = c(pba3_block, checklist_id)
-    ) |>
-    summarize(
-      duration_hours_total = sum(duration_minutes, na.rm = TRUE) / 60,
-      effort_distance_km = sum(effort_distance_km, na.rm = TRUE),
-      .by = pba3_block
-    ) |>
-    collect()
+  block_effort <- calc_block_effort(checklist_df)
 
   print("calculating species codes")
   block_species_coded <- checklist_df |>
