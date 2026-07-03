@@ -566,11 +566,7 @@ summarize_season <- function(
   block_checklist_count <- calc_checklist_count(checklist_df)
 
   print("calculating species observed")
-  block_species_observed <- checklist_df |>
-    select(pba3_block, common_name) |>
-    distinct() |>
-    summarize(species_observed = n_distinct(common_name), .by = pba3_block) |>
-    collect()
+  block_species_observed <- calc_species_observed(checklist_df)
 
   print("calculating birders")
   block_birders <- checklist_df |>
