@@ -170,3 +170,18 @@ calc_breeding_season_coverage <- function(x, y) {
       .by = pba3_block
     )
 }
+
+calc_nocturnal_species_coded <- function(x, y) {
+  x |>
+    semi_join(y, by = "common_name") |>
+    filter(breeding_rank >= 2) |>
+    summarize(
+      nocturnal_species_coded = n_distinct(common_name),
+      .by = pba3_block
+    ) |>
+    collect() |>
+    complete(
+      pba3_block = x |> distinct(pba3_block) |> collect() |> pull()
+    ) |>
+    mutate(nocturnal_species_coded = coalesce(nocturnal_species_coded, 0))
+}

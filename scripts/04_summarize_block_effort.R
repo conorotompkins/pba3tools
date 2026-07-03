@@ -591,18 +591,10 @@ summarize_season <- function(
   )
 
   print("calculating nocturnal species coded")
-  block_nocturnal_species_coded <- checklist_df |>
-    semi_join(nocturnal_species, by = "common_name") |>
-    filter(breeding_rank >= 2) |>
-    summarize(
-      nocturnal_species_coded = n_distinct(common_name),
-      .by = pba3_block
-    ) |>
-    collect() |>
-    complete(
-      pba3_block = checklist_df |> distinct(pba3_block) |> collect() |> pull()
-    ) |>
-    mutate(nocturnal_species_coded = coalesce(nocturnal_species_coded, 0))
+  block_nocturnal_species_coded <- calc_nocturnal_species_coded(
+    checklist_df,
+    nocturnal_species
+  )
 
   df_list <- list(
     block_checklist_count,
