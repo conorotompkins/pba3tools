@@ -38,3 +38,15 @@ calc_block_effort <- function(x) {
     ) |>
     collect()
 }
+
+calc_species_coded <- function(x) {
+  x |>
+    collect() |>
+    distinct(pba3_block, common_name, breeding_category_desc, breeding_rank) |>
+    group_by(pba3_block, common_name) |>
+    filter(breeding_rank == max(breeding_rank)) |>
+    ungroup() |>
+    count(pba3_block, breeding_category_desc, breeding_rank) |>
+    select(-breeding_rank) |>
+    pivot_wider(names_from = breeding_category_desc, values_from = n)
+}
