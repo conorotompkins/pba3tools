@@ -12,6 +12,7 @@ options(scipen = 999, digits = 4)
 theme_set(theme_bw())
 
 source("R/mode.R")
+source("R/summarize_season.R")
 
 #block name lookup file
 block_name_lookup <- read_csv("data/block_name_lookup.csv") |>
@@ -562,10 +563,7 @@ summarize_season <- function(
     )
 
   print("calculating checklist counts")
-  block_checklist_count <- checklist_df |>
-    distinct(pba3_block, checklist_id) |>
-    summarize(checklist_count = n_distinct(checklist_id), .by = pba3_block) |>
-    collect()
+  block_checklist_count <- calc_checklist_count(checklist_df)
 
   print("calculating species observed")
   block_species_observed <- checklist_df |>
