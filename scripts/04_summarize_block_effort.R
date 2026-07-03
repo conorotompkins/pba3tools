@@ -569,11 +569,7 @@ summarize_season <- function(
   block_species_observed <- calc_species_observed(checklist_df)
 
   print("calculating birders")
-  block_birders <- checklist_df |>
-    distinct(pba3_block, observer_id) |>
-    collect() |>
-    separate_rows(observer_id, sep = ",") |>
-    summarize(birders = n_distinct(observer_id), .by = pba3_block)
+  block_birders <- calc_atlasers(checklist_df)
 
   print("calculating effort summary")
   block_effort <- checklist_df |>

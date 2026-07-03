@@ -14,3 +14,11 @@ calc_species_observed <- function(x) {
     summarize(species_observed = n_distinct(common_name), .by = pba3_block) |>
     collect()
 }
+
+calc_atlasers <- function(x) {
+  x |>
+    distinct(pba3_block, observer_id) |>
+    collect() |>
+    separate_rows(observer_id, sep = ",") |>
+    summarize(birders = n_distinct(observer_id), .by = pba3_block)
+}
