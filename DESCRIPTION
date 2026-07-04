@@ -8,3 +8,25 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 8.0.0
+Depends: 
+    tidyverse
+Imports: 
+    arrow,
+    auk,
+    bsicons,
+    bslib,
+    geoarrow,
+    glue,
+    gt,
+    hms,
+    mapgl,
+    mirai,
+    reactable,
+    readxl,
+    sf,
+    shiny,
+    shinyWidgets,
+    suntools,
+    tictoc,
+    tools,
+    tsibble
