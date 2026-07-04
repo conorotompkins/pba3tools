@@ -7,7 +7,6 @@
 #' @returns A dataframe with distinct counts of checklists by block
 #'
 #' @export
-#' @examples
 calc_checklist_count <- function(x) {
   x |>
     distinct(pba3_block, checklist_id) |>
@@ -22,7 +21,6 @@ calc_checklist_count <- function(x) {
 #' @returns A dataframe with the number of distinct species observed in a given block
 #'
 #' @export
-#' @examples
 calc_species_observed <- function(x) {
   x |>
     select(pba3_block, common_name) |>
@@ -38,7 +36,6 @@ calc_species_observed <- function(x) {
 #' @returns A dataframe with the distinct count of atlasers in a given block
 #'
 #' @export
-#' @examples
 calc_atlasers <- function(x) {
   x |>
     distinct(pba3_block, observer_id) |>
@@ -54,7 +51,6 @@ calc_atlasers <- function(x) {
 #' @returns A dataframe with the total effort hours and distance (km) for each block.
 #'
 #' @export
-#' @examples
 calc_block_effort <- function(x) {
   x |>
     distinct(pba3_block, checklist_id, duration_minutes, effort_distance_km) |> #for each checklist, find max of duration minutes and effort distance
@@ -78,7 +74,6 @@ calc_block_effort <- function(x) {
 #' @returns A dataframe with the count of species for each breeding_category_desc in a given block
 #'
 #' @export
-#' @examples
 calc_species_coded <- function(x) {
   x |>
     collect() |>
@@ -100,7 +95,6 @@ calc_species_coded <- function(x) {
 #' @returns A dataframe with the diurnal, nocturnal, and unknown effort time.
 #'
 #' @export
-#' @examples
 calc_nocturnal_diurnal_effort <- function(x, y, z) {
   block_dn_raw <- x |>
     distinct(
@@ -212,7 +206,6 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
 #' @returns A dataframe with the number of breeding months covered in the block.
 #'
 #' @export
-#' @examples
 calc_breeding_season_coverage <- function(x, y) {
   x |>
     mutate(
@@ -238,7 +231,6 @@ calc_breeding_season_coverage <- function(x, y) {
 #' @returns The number of distinct nocturnal species coded in a block
 #'
 #' @export
-#' @examples
 calc_nocturnal_species_coded <- function(x, y) {
   x |>
     semi_join(y, by = "common_name") |>

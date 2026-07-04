@@ -5,7 +5,6 @@
 #' @returns A maplibre map of checklist locations
 #'
 #' @export
-#' @examples
 map_checklist_count <- function(x) {
   exp_seq <- function(start, end, length) {
     if (start <= 0 || end <= 0) {

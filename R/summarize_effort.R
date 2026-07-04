@@ -5,7 +5,6 @@
 #' @returns A gt() table
 #'
 #' @export
-#' @examples
 summarize_effort <- function(x) {
   x |>
     dplyr::select(

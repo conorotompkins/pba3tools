@@ -6,7 +6,6 @@
 #' @returns The modal value of the input vector
 #'
 #' @export
-#' @examples
 mode <- function(x, na.rm = FALSE) {
   # remember original class
   cls <- class(x)
