@@ -1,3 +1,11 @@
+#' Title
+#'
+#' @param x A dataframe of checklist effort time data
+#'
+#' @returns A gt() table
+#'
+#' @export
+#' @examples
 summarize_effort <- function(x) {
   x |>
     dplyr::select(

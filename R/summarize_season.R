@@ -97,7 +97,7 @@ calc_species_coded <- function(x) {
 #' @param y A dataframe with the modal observation datetime per checklist
 #' @param z A dataframe with the sunrise and sunset times for each checklist location
 #'
-#' @returns
+#' @returns A dataframe with the diurnal, nocturnal, and unknown effort time.
 #'
 #' @export
 #' @examples
@@ -209,7 +209,7 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
 #' @param x A dataframe with eBird checklists generated via auk
 #' @param y A dataframe with the PBA3 seasons and calendar month mappings
 #'
-#' @returns
+#' @returns A dataframe with the number of breeding months covered in the block.
 #'
 #' @export
 #' @examples
@@ -235,7 +235,7 @@ calc_breeding_season_coverage <- function(x, y) {
 #' @param x A dataframe with eBird checklists generated via auk.
 #' @param y A dataframe with the common names of nocturnal species
 #'
-#' @returns
+#' @returns The number of distinct nocturnal species coded in a block
 #'
 #' @export
 #' @examples

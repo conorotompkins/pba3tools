@@ -11,6 +11,9 @@ calc_nocturnal_species_coded(x, y)
 
 \item{y}{A dataframe with the common names of nocturnal species}
 }
+\value{
+The number of distinct nocturnal species coded in a block
+}
 \description{
 Title
 }

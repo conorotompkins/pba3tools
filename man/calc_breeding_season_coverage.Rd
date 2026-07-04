@@ -11,6 +11,9 @@ calc_breeding_season_coverage(x, y)
 
 \item{y}{A dataframe with the PBA3 seasons and calendar month mappings}
 }
+\value{
+A dataframe with the number of breeding months covered in the block.
+}
 \description{
 Title
 }

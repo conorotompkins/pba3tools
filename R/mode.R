@@ -1,3 +1,12 @@
+#' Title
+#'
+#' @param x A vector of values to find the mode for
+#' @param na.rm A boolean that indicates whether or not to remove missing values
+#'
+#' @returns The modal value of the input vector
+#'
+#' @export
+#' @examples
 mode <- function(x, na.rm = FALSE) {
   # remember original class
   cls <- class(x)

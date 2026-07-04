@@ -1,3 +1,11 @@
+#' Title
+#'
+#' @param x A dataframe with breeding code data
+#'
+#' @returns A gt() table
+#'
+#' @export
+#' @examples
 summarize_breeding_codes <- function(x) {
   x |>
     dplyr::select(Confirmed, Probable, Possible, Observed) |>

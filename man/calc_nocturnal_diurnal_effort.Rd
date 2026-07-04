@@ -13,6 +13,9 @@ calc_nocturnal_diurnal_effort(x, y, z)
 
 \item{z}{A dataframe with the sunrise and sunset times for each checklist location}
 }
+\value{
+A dataframe with the diurnal, nocturnal, and unknown effort time.
+}
 \description{
 Title
 }
