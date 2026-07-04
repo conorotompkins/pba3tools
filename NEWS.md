@@ -1,3 +1,5 @@
-# pba3tools (development version)
+# pba3tools
 
-* Initial CRAN submission.
+# 0.0.0.9000
+
+* Started package scaffolding
