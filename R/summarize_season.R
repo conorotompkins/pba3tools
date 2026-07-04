@@ -1,5 +1,13 @@
 #wrapper functions that feed summarize_season
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#'
+#' @returns A dataframe with distinct counts of checklists by block
+#'
+#' @export
+#' @examples
 calc_checklist_count <- function(x) {
   x |>
     distinct(pba3_block, checklist_id) |>
@@ -7,6 +15,14 @@ calc_checklist_count <- function(x) {
     collect()
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#'
+#' @returns A dataframe with the number of distinct species observed in a given block
+#'
+#' @export
+#' @examples
 calc_species_observed <- function(x) {
   x |>
     select(pba3_block, common_name) |>
@@ -15,6 +31,14 @@ calc_species_observed <- function(x) {
     collect()
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#'
+#' @returns A dataframe with the distinct count of atlasers in a given block
+#'
+#' @export
+#' @examples
 calc_atlasers <- function(x) {
   x |>
     distinct(pba3_block, observer_id) |>
@@ -23,6 +47,14 @@ calc_atlasers <- function(x) {
     summarize(birders = n_distinct(observer_id), .by = pba3_block)
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#'
+#' @returns A dataframe with the total effort hours and distance (km) for each block.
+#'
+#' @export
+#' @examples
 calc_block_effort <- function(x) {
   x |>
     distinct(pba3_block, checklist_id, duration_minutes, effort_distance_km) |> #for each checklist, find max of duration minutes and effort distance
@@ -39,6 +71,14 @@ calc_block_effort <- function(x) {
     collect()
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#'
+#' @returns A dataframe with the count of species for each breeding_category_desc in a given block
+#'
+#' @export
+#' @examples
 calc_species_coded <- function(x) {
   x |>
     collect() |>
@@ -51,6 +91,16 @@ calc_species_coded <- function(x) {
     pivot_wider(names_from = breeding_category_desc, values_from = n)
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#' @param y A dataframe with the modal observation datetime per checklist
+#' @param z A dataframe with the sunrise and sunset times for each checklist location
+#'
+#' @returns
+#'
+#' @export
+#' @examples
 calc_nocturnal_diurnal_effort <- function(x, y, z) {
   block_dn_raw <- x |>
     distinct(
@@ -154,6 +204,15 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
     left_join(block_dn_date)
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk
+#' @param y A dataframe with the PBA3 seasons and calendar month mappings
+#'
+#' @returns
+#'
+#' @export
+#' @examples
 calc_breeding_season_coverage <- function(x, y) {
   x |>
     mutate(
@@ -171,6 +230,15 @@ calc_breeding_season_coverage <- function(x, y) {
     )
 }
 
+#' Title
+#'
+#' @param x A dataframe with eBird checklists generated via auk.
+#' @param y A dataframe with the common names of nocturnal species
+#'
+#' @returns
+#'
+#' @export
+#' @examples
 calc_nocturnal_species_coded <- function(x, y) {
   x |>
     semi_join(y, by = "common_name") |>
