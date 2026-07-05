@@ -5,9 +5,13 @@ library(sf)
 library(tools)
 library(arrow)
 
+source("R/year_month_to_last_date.R")
+
 auk_file <- "data/ebd_US-PA_202401_202605_smp_relMay-2026/ebd_US-PA_202401_202605_smp_relMay-2026.txt"
 
 file.exists(auk_file) == TRUE
+
+month_regex <- "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)"
 
 release_pattern <- "(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-\\d{4}.txt"
 
@@ -20,10 +24,16 @@ write_file(ebird_release, "data/ebird_release.txt")
 
 output_file <- "data/pa_breeding_bird_atlas_data_raw.txt"
 
+date_start <- lubridate::ymd("2024-01-01")
+
+date_end <- year_month_to_last_date(ebird_release)
+
+paste(date_start, date_end) |> print()
+
 tic()
 ebd <- auk_file |>
   auk_ebd() |>
-  auk_date(date = c("2024-01-01", "2026-04-30")) |> #need to update every refresh
+  auk_date(date = c(date_start, date_end)) |> #need to update every refresh
   auk_project("Pennsylvania Bird Atlas") |>
   auk_filter(file = output_file, overwrite = TRUE) |>
   # 4. read text file into r data frame
@@ -57,6 +67,10 @@ ebd |>
   ggplot() +
   geom_sf(alpha = .01, size = .5) +
   theme_void()
+
+ebd |>
+  distinct(observation_date) |>
+  filter(observation_date == max(observation_date))
 
 ebd |>
   distinct(checklist_id) |>
