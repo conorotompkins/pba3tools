@@ -78,7 +78,8 @@ ui <- page_navbar(
             "All seasons" = "All seasons",
             "Breeding" = "Breeding",
             "Winter" = "Winter"
-          )
+          ),
+          selected = "Breeding"
         ),
         radioGroupButtons(
           inputId = "block_variable",
@@ -103,7 +104,8 @@ ui <- page_navbar(
           "All seasons" = "All seasons",
           "Breeding" = "Breeding",
           "Winter" = "Winter"
-        )
+        ),
+        selected = "Breeding"
       ),
       csvDownloadButton(
         "block_progress_table",
@@ -130,7 +132,8 @@ ui <- page_navbar(
           selectInput(
             inputId = "report_season",
             label = "Season",
-            choices = c("All seasons", "Breeding", "Winter")
+            choices = c("All seasons", "Breeding", "Winter"),
+            selected = "Breeding"
           ),
 
           # selectInput(
