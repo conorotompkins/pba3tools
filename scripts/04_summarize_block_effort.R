@@ -437,6 +437,10 @@ pba2_breeding_rank_max <- pbba2_df |>
   )
 
 pba3_breeding_rank_max <- ebd_df |>
+  semi_join(
+    seasons |> filter(season == "Breeding"),
+    by = c("observation_month" = "month")
+  ) |>
   collect() |>
   group_by(pba3_block, common_name) |>
   filter(breeding_rank == max(breeding_rank)) |>
@@ -539,7 +543,8 @@ atlas_block_comparison <- atlas_max_breeding_rank_comparison |>
   mutate(
     pba3_pba2_coded_count_compare_pct = species_coded_pba3 / species_coded_pba2
   ) |>
-  arrange(desc(species_count_pba3))
+  arrange(desc(species_count_pba3)) |>
+  mutate(season = "Breeding")
 
 atlas_block_comparison |>
   write_parquet("data/atlas_block_comparison.parquet")
@@ -662,8 +667,7 @@ block_summary_seasons <- left_join(
 
 block_summary_seasons <- block_summary_seasons |>
   left_join(
-    atlas_block_comparison |>
-      mutate(season = "All seasons"),
+    atlas_block_comparison,
     by = c("pba3_block", "season")
   ) |>
   left_join(block_name_lookup, by = join_by(pba3_block)) |>
