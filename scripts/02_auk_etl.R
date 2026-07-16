@@ -7,7 +7,7 @@ library(arrow)
 
 source("R/year_month_to_last_date.R")
 
-auk_file <- "data/ebd_US-PA_202401_202605_smp_relMay-2026/ebd_US-PA_202401_202605_smp_relMay-2026.txt"
+auk_file <- "data/ebd_US-PA_202401_202606_smp_relJun-2026/ebd_US-PA_202401_202606_smp_relJun-2026.txt"
 
 file.exists(auk_file) == TRUE
 
