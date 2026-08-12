@@ -148,7 +148,13 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
         is.na(flag_is_diurnal_checklist) ~ "unknown"
       )
     ) |>
-    select(-flag_is_diurnal_checklist)
+    select(-flag_is_diurnal_checklist) |>
+    mutate(
+      checklist_type = factor(
+        checklist_type,
+        levels = c("diurnal", "nocturnal", "unknown")
+      )
+    )
 
   block_dn_summary <- block_dn_raw |>
     summarize(
@@ -158,7 +164,8 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
     pivot_wider(
       names_from = checklist_type,
       values_from = duration_hours,
-      names_prefix = "duration_hours_"
+      names_prefix = "duration_hours_",
+      names_expand = TRUE
     ) |>
     select(
       pba3_block,
@@ -183,7 +190,8 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
     pivot_wider(
       names_from = checklist_type,
       values_from = duration_hours,
-      names_prefix = "duration_hours_"
+      names_prefix = "duration_hours_",
+      names_expand = TRUE
     ) |>
     select(
       pba3_block,
