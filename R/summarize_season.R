@@ -114,13 +114,19 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
         .default = observation_datetime
       )
     ) |>
-    select(-c(observation_datetime_fixed, observer_id)) |>
-    #for each checklist, find max of duration minutes and effort distance
-    summarize(
-      observation_datetime = min(observation_datetime, na.rm = TRUE),
-      duration_minutes = max(duration_minutes, na.rm = TRUE),
-      .by = c(pba3_block, checklist_id, longitude, latitude)
-    ) |>
+    select(-c(observation_datetime_fixed, observer_id))
+
+  #for each checklist, find max of duration minutes and effort distance
+  #the max() warning for all-NA duration_minutes groups is suppressed here
+  #since the resulting -Inf is expected and replaced with 0 immediately below
+  block_dn_raw <- suppressWarnings(
+    block_dn_raw |>
+      summarize(
+        observation_datetime = min(observation_datetime, na.rm = TRUE),
+        duration_minutes = max(duration_minutes, na.rm = TRUE),
+        .by = c(pba3_block, checklist_id, longitude, latitude)
+      )
+  ) |>
     mutate(
       #if all checklists for a block have NA duration_minutes, max(duration_minutes) is -Inf. Replace with 0
       duration_minutes = case_when(
