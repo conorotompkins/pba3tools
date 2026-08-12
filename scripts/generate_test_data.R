@@ -242,7 +242,14 @@ test_data <- ebd_df |>
 
 calc_checklist_count_results <- calc_checklist_count(test_data)
 
-summarize_season_results <- summarize_season(
+summarized_season_results <- summarize_season(
   test_data,
   season_filter = "All seasons"
+)
+
+summarized_season_results
+
+saveRDS(
+  summarized_season_results,
+  "tests/testthat/fixtures/summarized_season_results.rds"
 )
