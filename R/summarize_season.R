@@ -114,13 +114,19 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
         .default = observation_datetime
       )
     ) |>
-    select(-c(observation_datetime_fixed, observer_id)) |>
-    #for each checklist, find max of duration minutes and effort distance
-    summarize(
-      observation_datetime = min(observation_datetime, na.rm = TRUE),
-      duration_minutes = max(duration_minutes, na.rm = TRUE),
-      .by = c(pba3_block, checklist_id, longitude, latitude)
-    ) |>
+    select(-c(observation_datetime_fixed, observer_id))
+
+  #for each checklist, find max of duration minutes and effort distance
+  #the max() warning for all-NA duration_minutes groups is suppressed here
+  #since the resulting -Inf is expected and replaced with 0 immediately below
+  block_dn_raw <- suppressWarnings(
+    block_dn_raw |>
+      summarize(
+        observation_datetime = min(observation_datetime, na.rm = TRUE),
+        duration_minutes = max(duration_minutes, na.rm = TRUE),
+        .by = c(pba3_block, checklist_id, longitude, latitude)
+      )
+  ) |>
     mutate(
       #if all checklists for a block have NA duration_minutes, max(duration_minutes) is -Inf. Replace with 0
       duration_minutes = case_when(
@@ -148,7 +154,13 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
         is.na(flag_is_diurnal_checklist) ~ "unknown"
       )
     ) |>
-    select(-flag_is_diurnal_checklist)
+    select(-flag_is_diurnal_checklist) |>
+    mutate(
+      checklist_type = factor(
+        checklist_type,
+        levels = c("diurnal", "nocturnal", "unknown")
+      )
+    )
 
   block_dn_summary <- block_dn_raw |>
     summarize(
@@ -158,7 +170,8 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
     pivot_wider(
       names_from = checklist_type,
       values_from = duration_hours,
-      names_prefix = "duration_hours_"
+      names_prefix = "duration_hours_",
+      names_expand = TRUE
     ) |>
     select(
       pba3_block,
@@ -183,7 +196,8 @@ calc_nocturnal_diurnal_effort <- function(x, y, z) {
     pivot_wider(
       names_from = checklist_type,
       values_from = duration_hours,
-      names_prefix = "duration_hours_"
+      names_prefix = "duration_hours_",
+      names_expand = TRUE
     ) |>
     select(
       pba3_block,
@@ -244,4 +258,83 @@ calc_nocturnal_species_coded <- function(x, y) {
       pba3_block = x |> distinct(pba3_block) |> collect() |> pull()
     ) |>
     mutate(nocturnal_species_coded = coalesce(nocturnal_species_coded, 0))
+}
+
+#' Title
+#'
+#' @param checklist_df
+#' @param block_df
+#' @param seasons_df
+#' @param season_filter
+#' @param pba2_block_data
+#'
+#' @returns
+#'
+#' @export
+#' @examples
+summarize_season <- function(
+  checklist_df,
+  block_df,
+  seasons_df = seasons,
+  season_filter,
+  pba2_block_data = pba2_blocks
+) {
+  print(season_filter)
+  seasons_df <- seasons_df |>
+    filter(season == season_filter)
+
+  checklist_df <- checklist_df |>
+    semi_join(
+      seasons_df,
+      by = join_by(observation_month == month)
+    )
+
+  print("calculating checklist counts")
+  block_checklist_count <- calc_checklist_count(checklist_df)
+
+  print("calculating species observed")
+  block_species_observed <- calc_species_observed(checklist_df)
+
+  print("calculating birders")
+  block_birders <- calc_atlasers(checklist_df)
+
+  print("calculating effort summary")
+  block_effort <- calc_block_effort(checklist_df)
+
+  print("calculating species codes")
+  block_species_coded <- calc_species_coded(checklist_df)
+
+  print("calculating diurnal/nocturnal effort")
+  block_nocturnal_diurnal <- calc_nocturnal_diurnal_effort(
+    checklist_df,
+    ob_dt_fixed,
+    location_sunrise_sunset
+  )
+
+  print("calculating breeding season coverage")
+  block_breeding_season_coverage <- calc_breeding_season_coverage(
+    checklist_df,
+    seasons
+  )
+
+  print("calculating nocturnal species coded")
+  block_nocturnal_species_coded <- calc_nocturnal_species_coded(
+    checklist_df,
+    nocturnal_species
+  )
+
+  df_list <- list(
+    block_checklist_count,
+    block_species_observed,
+    block_birders,
+    block_effort,
+    block_species_coded,
+    block_nocturnal_diurnal,
+    block_breeding_season_coverage,
+    block_nocturnal_species_coded
+  )
+
+  block_summary <- reduce(df_list, left_join, by = "pba3_block")
+
+  block_summary
 }
