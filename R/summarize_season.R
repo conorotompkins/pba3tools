@@ -79,19 +79,38 @@ calc_atlasers <- function(x) {
 #'
 #' @export
 calc_block_effort <- function(x) {
-  x |>
-    distinct(pba3_block, checklist_id, duration_minutes, effort_distance_km) |> #for each checklist, find max of duration minutes and effort distance
-    summarize(
-      duration_minutes = max(duration_minutes, na.rm = TRUE),
-      effort_distance_km = max(effort_distance_km, na.rm = TRUE),
-      .by = c(pba3_block, checklist_id)
+  #the max() warning for all-NA groups is suppressed here since the
+  #resulting -Inf is expected and replaced with 0 immediately below
+  suppressWarnings(
+    x |>
+      distinct(
+        pba3_block,
+        checklist_id,
+        duration_minutes,
+        effort_distance_km
+      ) |>
+      summarize(
+        duration_minutes = max(duration_minutes, na.rm = TRUE),
+        effort_distance_km = max(effort_distance_km, na.rm = TRUE),
+        .by = c(pba3_block, checklist_id)
+      ) |>
+      collect()
+  ) |>
+    mutate(
+      duration_minutes = case_when(
+        duration_minutes == -Inf ~ 0,
+        .default = duration_minutes
+      ),
+      effort_distance_km = case_when(
+        effort_distance_km == -Inf ~ 0,
+        .default = effort_distance_km
+      )
     ) |>
     summarize(
       duration_hours_total = sum(duration_minutes, na.rm = TRUE) / 60,
       effort_distance_km = sum(effort_distance_km, na.rm = TRUE),
       .by = pba3_block
-    ) |>
-    collect()
+    )
 }
 
 #' Count species by highest breeding code reached, per block

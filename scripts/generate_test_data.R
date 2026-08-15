@@ -268,6 +268,7 @@ location_sunrise_sunset_fixture <- location_sunrise_sunset |>
 saveRDS(
   list(
     checklist_df = test_data_collected,
+    seasons_df = seasons,
     ob_dt_fixed = ob_dt_fixed_fixture,
     location_sunrise_sunset = location_sunrise_sunset_fixture,
     nocturnal_species = nocturnal_species
@@ -275,11 +276,14 @@ saveRDS(
   "tests/testthat/fixtures/summarize_season_inputs.rds"
 )
 
+# Generate output fixture from the same collected data + scoped inputs
+# saved in summarize_season_inputs.rds so both fixtures use the same
+# code path (local dplyr, not Arrow).
 summarized_season_results <- summarize_season(
-  test_data,
+  test_data_collected,
   season_filter = "All seasons",
-  ob_dt_fixed = ob_dt_fixed,
-  location_sunrise_sunset = location_sunrise_sunset,
+  ob_dt_fixed = ob_dt_fixed_fixture,
+  location_sunrise_sunset = location_sunrise_sunset_fixture,
   nocturnal_species = nocturnal_species
 )
 
