@@ -552,7 +552,6 @@ atlas_block_comparison |>
 #summary metrics by season
 x <- summarize_season(
   checklist_df = ebd_df,
-  block_df = block_checklist_geo,
   season_filter = "All seasons"
 )
 
@@ -576,7 +575,6 @@ season_summaries <- map(
   set_names(c("All seasons", "Breeding", "Winter")),
   ~ summarize_season(
     checklist_df = ebd_df,
-    block_df = block_checklist_geo,
     season_filter = .x
   )
 )

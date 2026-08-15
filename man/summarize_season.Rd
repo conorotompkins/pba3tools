@@ -2,16 +2,39 @@
 % Please edit documentation in R/summarize_season.R
 \name{summarize_season}
 \alias{summarize_season}
-\title{Title}
+\title{Build a block-level summary of eBird checklist activity for one season}
 \usage{
-summarize_season(
-  checklist_df,
-  block_df,
-  seasons_df = seasons,
-  season_filter,
-  pba2_block_data = pba2_blocks
-)
+summarize_season(checklist_df, seasons_df = seasons, season_filter)
+}
+\arguments{
+\item{checklist_df}{A dataframe (or lazy tbl) of eBird checklists
+generated via auk, with an \code{observation_month} column matching the
+\code{month} column in \code{seasons_df}.}
+
+\item{seasons_df}{A dataframe of PBA3 seasons and calendar month
+mappings, with \code{season} and \code{month} columns. Defaults to \code{seasons}.}
+
+\item{season_filter}{A single season name (matching a value in
+\code{seasons_df$season}, e.g. \code{"Breeding"}) used to restrict
+\code{checklist_df} to the relevant months.}
+}
+\value{
+A dataframe with one row per \code{pba3_block} present in
+\code{checklist_df} containing all of the metrics computed by the
+\verb{calc_*()} helper functions, joined together on \code{pba3_block}. Blocks
+with no checklists in \code{checklist_df} are not included; callers that
+need a complete set of blocks (e.g. including geometry) should
+\code{left_join()} the result onto their own block reference table, as done
+in \verb{scripts/04_summarize_block_effort.R}.
 }
 \description{
-Title
+Filters an eBird checklist table down to the calendar months belonging to
+\code{season_filter}, then computes and joins a full set of per-block metrics
+(checklist counts, species observed, birder counts, effort hours,
+breeding codes, diurnal/nocturnal effort, breeding season coverage, and
+nocturnal species coded) via the \verb{calc_*()} helper functions in this
+file. See \code{\link[=calc_checklist_count]{calc_checklist_count()}}, \code{\link[=calc_species_observed]{calc_species_observed()}},
+\code{\link[=calc_atlasers]{calc_atlasers()}}, \code{\link[=calc_block_effort]{calc_block_effort()}}, \code{\link[=calc_species_coded]{calc_species_coded()}},
+\code{\link[=calc_nocturnal_diurnal_effort]{calc_nocturnal_diurnal_effort()}}, \code{\link[=calc_breeding_season_coverage]{calc_breeding_season_coverage()}},
+and \code{\link[=calc_nocturnal_species_coded]{calc_nocturnal_species_coded()}} for details on each metric.
 }

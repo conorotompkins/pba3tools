@@ -2,18 +2,24 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_breeding_season_coverage}
 \alias{calc_breeding_season_coverage}
-\title{Title}
+\title{Count breeding-season months covered per block}
 \usage{
 calc_breeding_season_coverage(x, y)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block} and \code{observation_datetime} columns.}
 
-\item{y}{A dataframe with the PBA3 seasons and calendar month mappings}
+\item{y}{A dataframe with the PBA3 seasons and calendar month mappings,
+containing \code{season} and \code{month} columns (\code{month} matching the
+abbreviated month labels derived from \code{x$observation_datetime}).}
 }
 \value{
-A dataframe with the number of breeding months covered in the block.
+A dataframe with one row per \code{pba3_block} and a
+\code{breeding_season_months_covered} column giving the number of distinct
+calendar months (restricted to the "Breeding" season in \code{y}) with at
+least one checklist in that block.
 }
 \description{
-Title
+Count breeding-season months covered per block
 }

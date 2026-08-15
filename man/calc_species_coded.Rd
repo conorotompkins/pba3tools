@@ -2,16 +2,23 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_species_coded}
 \alias{calc_species_coded}
-\title{Title}
+\title{Count species by highest breeding code reached, per block}
 \usage{
 calc_species_coded(x)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block}, \code{common_name}, \code{breeding_category_desc}, and
+\code{breeding_rank} columns.}
 }
 \value{
-A dataframe with the count of species for each breeding_category_desc in a given block
+A wide dataframe with one row per \code{pba3_block} and one column
+per \code{breeding_category_desc}, giving the count of species that reached
+that breeding category as their highest code in that block.
 }
 \description{
-Title
+For each species observed in a block, keeps only its highest-ranked
+breeding code (via \code{breeding_rank}) and tallies how many species reached
+each \code{breeding_category_desc} (e.g. "Observed", "Possible", "Probable",
+"Confirmed").
 }

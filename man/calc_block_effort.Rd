@@ -2,16 +2,22 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_block_effort}
 \alias{calc_block_effort}
-\title{Title}
+\title{Summarize total survey effort per block}
 \usage{
 calc_block_effort(x)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block}, \code{checklist_id}, \code{duration_minutes}, and
+\code{effort_distance_km} columns.}
 }
 \value{
-A dataframe with the total effort hours and distance (km) for each block.
+A dataframe with one row per \code{pba3_block} and columns
+\code{duration_hours_total} (total survey time, in hours) and
+\code{effort_distance_km} (total distance traveled, in km).
 }
 \description{
-Title
+For each checklist, takes the maximum reported \code{duration_minutes} and
+\code{effort_distance_km} (guarding against duplicate rows per checklist),
+then sums these across all checklists in a block.
 }
