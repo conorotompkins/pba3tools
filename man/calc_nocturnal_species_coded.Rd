@@ -2,18 +2,25 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_nocturnal_species_coded}
 \alias{calc_nocturnal_species_coded}
-\title{Title}
+\title{Count nocturnal species coded per block}
 \usage{
 calc_nocturnal_species_coded(x, y)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk.}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block}, \code{common_name}, and \code{breeding_rank} columns.}
 
-\item{y}{A dataframe with the common names of nocturnal species}
+\item{y}{A dataframe with the common names of nocturnal species, joined
+to \code{x} by \code{common_name}.}
 }
 \value{
-The number of distinct nocturnal species coded in a block
+A dataframe with one row per \code{pba3_block} (every block present
+in \code{x}) and a \code{nocturnal_species_coded} column giving the number of
+distinct nocturnal species coded at "Possible" or higher in that block.
 }
 \description{
-Title
+Counts species from a known nocturnal-species list that reached a
+breeding code of "Possible" or higher (\code{breeding_rank >= 2}) in each
+block. Blocks with no qualifying nocturnal species are included with a
+count of 0 rather than being dropped.
 }

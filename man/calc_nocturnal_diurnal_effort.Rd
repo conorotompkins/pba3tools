@@ -2,20 +2,36 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_nocturnal_diurnal_effort}
 \alias{calc_nocturnal_diurnal_effort}
-\title{Title}
+\title{Classify and summarize checklist effort as diurnal or nocturnal}
 \usage{
 calc_nocturnal_diurnal_effort(x, y, z)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block}, \code{checklist_id}, \code{observer_id},
+\code{observation_datetime}, \code{longitude}, \code{latitude}, and
+\code{duration_minutes} columns.}
 
-\item{y}{A dataframe with the modal observation datetime per checklist}
+\item{y}{A dataframe with the modal observation datetime per checklist
+(columns \code{checklist_id} and \code{observation_datetime_fixed}), used to
+correct inconsistent checklist start times.}
 
-\item{z}{A dataframe with the sunrise and sunset times for each checklist location}
+\item{z}{A dataframe with sunrise and sunset times for each checklist
+location, joinable to \code{x} by \code{longitude}, \code{latitude}, and
+\code{observation_datetime}, with \code{sunrise} and \code{sunset} columns.}
 }
 \value{
-A dataframe with the diurnal, nocturnal, and unknown effort time.
+A dataframe with one row per \code{pba3_block} and:
+\itemize{
+\item \code{duration_hours_diurnal}, \code{duration_hours_nocturnal},
+\code{duration_hours_unknown}: total effort hours of each type, and
+\item \code{effort_breakdown}: a list-column of nested dataframes giving the
+same three duration columns broken down by \code{observation_date}.
+}
 }
 \description{
-Title
+Each checklist's start time is classified as \code{"diurnal"} (within 40
+minutes before sunrise through 20 minutes after sunset), \code{"nocturnal"}
+(outside that window), or \code{"unknown"} (missing sunrise/sunset data), then
+effort hours are summed per block, both overall and by observation date.
 }

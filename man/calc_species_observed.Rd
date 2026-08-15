@@ -2,16 +2,19 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_species_observed}
 \alias{calc_species_observed}
-\title{Title}
+\title{Count distinct species observed per block}
 \usage{
 calc_species_observed(x)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block} and \code{common_name} columns.}
 }
 \value{
-A dataframe with the number of distinct species observed in a given block
+A dataframe with one row per \code{pba3_block} and a
+\code{species_observed} column giving the number of distinct species
+reported in that block.
 }
 \description{
-Title
+Count distinct species observed per block
 }

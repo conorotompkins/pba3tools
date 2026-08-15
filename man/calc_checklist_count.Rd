@@ -2,16 +2,18 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_checklist_count}
 \alias{calc_checklist_count}
-\title{Title}
+\title{Count distinct checklists per block}
 \usage{
 calc_checklist_count(x)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block} and \code{checklist_id} columns.}
 }
 \value{
-A dataframe with distinct counts of checklists by block
+A dataframe with one row per \code{pba3_block} and a \code{checklist_count}
+column giving the number of distinct checklists submitted in that block.
 }
 \description{
-Title
+Count distinct checklists per block
 }

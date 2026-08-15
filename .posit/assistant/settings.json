@@ -1,5 +1,10 @@
 {
   "sandbox": {
     "enabled": true
+  },
+  "permission": {
+    "edit": {
+      "*.R": "allow"
+    }
   }
 }

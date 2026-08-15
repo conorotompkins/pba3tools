@@ -2,16 +2,21 @@
 % Please edit documentation in R/summarize_season.R
 \name{calc_atlasers}
 \alias{calc_atlasers}
-\title{Title}
+\title{Count distinct birders (atlasers) per block}
 \usage{
 calc_atlasers(x)
 }
 \arguments{
-\item{x}{A dataframe with eBird checklists generated via auk}
+\item{x}{A dataframe (or lazy tbl) of eBird checklists generated via auk,
+containing \code{pba3_block} and \code{observer_id} columns.}
 }
 \value{
-A dataframe with the distinct count of atlasers in a given block
+A dataframe with one row per \code{pba3_block} and a \code{birders} column
+giving the number of distinct observers who submitted checklists in
+that block.
 }
 \description{
-Title
+\code{observer_id} may contain multiple, comma-separated observer IDs for a
+single checklist (shared/group checklists); this function splits those
+out before counting so each birder is counted once per block.
 }
