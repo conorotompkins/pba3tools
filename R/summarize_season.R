@@ -347,6 +347,14 @@ calc_nocturnal_species_coded <- function(x, y) {
 #' @param season_filter A single season name (matching a value in
 #'   `seasons_df$season`, e.g. `"Breeding"`) used to restrict
 #'   `checklist_df` to the relevant months.
+#' @param ob_dt_fixed A dataframe with the modal observation datetime per
+#'   checklist (columns `checklist_id` and `observation_datetime_fixed`),
+#'   passed through to [calc_nocturnal_diurnal_effort()].
+#' @param location_sunrise_sunset A dataframe with sunrise and sunset times
+#'   for each checklist location, passed through to
+#'   [calc_nocturnal_diurnal_effort()].
+#' @param nocturnal_species A dataframe with the common names of nocturnal
+#'   species, passed through to [calc_nocturnal_species_coded()].
 #'
 #' @returns A dataframe with one row per `pba3_block` present in
 #'   `checklist_df` containing all of the metrics computed by the
@@ -360,15 +368,18 @@ calc_nocturnal_species_coded <- function(x, y) {
 summarize_season <- function(
   checklist_df,
   seasons_df = seasons,
-  season_filter
+  season_filter,
+  ob_dt_fixed,
+  location_sunrise_sunset,
+  nocturnal_species
 ) {
   print(season_filter)
-  seasons_df <- seasons_df |>
+  season_filtered_df <- seasons_df |>
     filter(season == season_filter)
 
   checklist_df <- checklist_df |>
     semi_join(
-      seasons_df,
+      season_filtered_df,
       by = join_by(observation_month == month)
     )
 
@@ -397,8 +408,11 @@ summarize_season <- function(
   print("calculating breeding season coverage")
   block_breeding_season_coverage <- calc_breeding_season_coverage(
     checklist_df,
-    seasons
+    seasons_df
   )
+  # Note: calc_breeding_season_coverage() always restricts `seasons_df` to
+  # the "Breeding" season internally, so it needs the full (unfiltered)
+  # `seasons_df` argument here, not `season_filtered_df`.
 
   print("calculating nocturnal species coded")
   block_nocturnal_species_coded <- calc_nocturnal_species_coded(

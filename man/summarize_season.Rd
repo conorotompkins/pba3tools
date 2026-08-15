@@ -4,7 +4,14 @@
 \alias{summarize_season}
 \title{Build a block-level summary of eBird checklist activity for one season}
 \usage{
-summarize_season(checklist_df, seasons_df = seasons, season_filter)
+summarize_season(
+  checklist_df,
+  seasons_df = seasons,
+  season_filter,
+  ob_dt_fixed,
+  location_sunrise_sunset,
+  nocturnal_species
+)
 }
 \arguments{
 \item{checklist_df}{A dataframe (or lazy tbl) of eBird checklists
@@ -17,6 +24,17 @@ mappings, with \code{season} and \code{month} columns. Defaults to \code{seasons
 \item{season_filter}{A single season name (matching a value in
 \code{seasons_df$season}, e.g. \code{"Breeding"}) used to restrict
 \code{checklist_df} to the relevant months.}
+
+\item{ob_dt_fixed}{A dataframe with the modal observation datetime per
+checklist (columns \code{checklist_id} and \code{observation_datetime_fixed}),
+passed through to \code{\link[=calc_nocturnal_diurnal_effort]{calc_nocturnal_diurnal_effort()}}.}
+
+\item{location_sunrise_sunset}{A dataframe with sunrise and sunset times
+for each checklist location, passed through to
+\code{\link[=calc_nocturnal_diurnal_effort]{calc_nocturnal_diurnal_effort()}}.}
+
+\item{nocturnal_species}{A dataframe with the common names of nocturnal
+species, passed through to \code{\link[=calc_nocturnal_species_coded]{calc_nocturnal_species_coded()}}.}
 }
 \value{
 A dataframe with one row per \code{pba3_block} present in

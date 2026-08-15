@@ -240,14 +240,48 @@ atlas_block_comparison <- atlas_max_breeding_rank_comparison |>
 test_data <- ebd_df |>
   filter(pba3_block == "40080D1SE") #Pittsburgh West SE
 
-calc_checklist_count_results <- calc_checklist_count(test_data)
+#freeze the summarize_season() inputs that summarize_season() otherwise
+#requires as explicit arguments (checklist_df, ob_dt_fixed,
+#location_sunrise_sunset, nocturnal_species), scoped down to what's
+#relevant to test_data so the fixture stays small and self-contained
+#(no dependency on the raw parquet file at test time).
+test_data_collected <- test_data |>
+  collect()
+
+test_data_checklist_ids <- test_data |>
+  distinct(checklist_id) |>
+  collect()
+
+test_data_locations <- test_data |>
+  distinct(longitude, latitude, observation_datetime) |>
+  collect()
+
+ob_dt_fixed_fixture <- ob_dt_fixed |>
+  semi_join(test_data_checklist_ids, by = "checklist_id")
+
+location_sunrise_sunset_fixture <- location_sunrise_sunset |>
+  semi_join(
+    test_data_locations,
+    by = c("longitude", "latitude", "observation_datetime")
+  )
+
+saveRDS(
+  list(
+    checklist_df = test_data_collected,
+    ob_dt_fixed = ob_dt_fixed_fixture,
+    location_sunrise_sunset = location_sunrise_sunset_fixture,
+    nocturnal_species = nocturnal_species
+  ),
+  "tests/testthat/fixtures/summarize_season_inputs.rds"
+)
 
 summarized_season_results <- summarize_season(
   test_data,
-  season_filter = "All seasons"
+  season_filter = "All seasons",
+  ob_dt_fixed = ob_dt_fixed,
+  location_sunrise_sunset = location_sunrise_sunset,
+  nocturnal_species = nocturnal_species
 )
-
-summarized_season_results
 
 saveRDS(
   summarized_season_results,
