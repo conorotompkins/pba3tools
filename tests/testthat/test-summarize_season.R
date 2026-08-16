@@ -248,3 +248,18 @@ test_that("breeding_season_months_covered is between 0 and 5", {
 test_that("nocturnal_species_coded is non-negative", {
   expect_gte(expected$nocturnal_species_coded, 0)
 })
+
+test_that("summarize_season output matches saved fixture (regression)", {
+  inputs <- readRDS(test_path("fixtures", "summarize_season_inputs.rds"))
+
+  result <- summarize_season(
+    checklist_df = inputs$checklist_df,
+    seasons_df = inputs$seasons_df,
+    season_filter = "All seasons",
+    ob_dt_fixed = inputs$ob_dt_fixed,
+    location_sunrise_sunset = inputs$location_sunrise_sunset,
+    nocturnal_species = inputs$nocturnal_species
+  )
+
+  expect_equal(result, expected)
+})

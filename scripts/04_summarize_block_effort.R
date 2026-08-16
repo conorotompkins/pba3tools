@@ -552,7 +552,10 @@ atlas_block_comparison |>
 #summary metrics by season
 x <- summarize_season(
   checklist_df = ebd_df,
-  season_filter = "All seasons"
+  season_filter = "All seasons",
+  ob_dt_fixed = ob_dt_fixed,
+  location_sunrise_sunset = location_sunrise_sunset,
+  nocturnal_species = nocturnal_species
 )
 
 x |>
@@ -575,7 +578,10 @@ season_summaries <- map(
   set_names(c("All seasons", "Breeding", "Winter")),
   ~ summarize_season(
     checklist_df = ebd_df,
-    season_filter = .x
+    season_filter = .x,
+    ob_dt_fixed = ob_dt_fixed,
+    location_sunrise_sunset = location_sunrise_sunset,
+    nocturnal_species = nocturnal_species
   )
 )
 
