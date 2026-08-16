@@ -7,7 +7,7 @@ library(arrow)
 
 source("R/year_month_to_last_date.R")
 
-auk_file <- "data/ebd_US-PA_202401_202606_smp_relJun-2026/ebd_US-PA_202401_202606_smp_relJun-2026.txt"
+auk_file <- "data/ebd_US-PA_202401_202607_smp_relJul-2026/ebd_US-PA_202401_202607_smp_relJul-2026.txt"
 
 file.exists(auk_file) == TRUE
 
@@ -31,6 +31,7 @@ date_end <- year_month_to_last_date(ebird_release)
 paste(date_start, date_end) |> print()
 
 tic()
+Sys.Time()
 ebd <- auk_file |>
   auk_ebd() |>
   auk_date(date = c(date_start, date_end)) |> #need to update every refresh
