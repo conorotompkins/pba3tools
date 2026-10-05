@@ -195,9 +195,9 @@ completion_table <- block_summary |>
   mutate(
     flag_coded_species = species_coded >= 70,
     flag_confirmed_pct = confirmed_pct >= .25,
-    flag_possible_pct = possible_pct < .25,
+    flag_possible_pct = possible_pct <= .5,
     flag_coded_atlas_comparison = pba3_pba2_coded_count_compare_pct >= .8,
-    flag_20_effort_hours = duration_hours_total >= 20,
+    flag_10_effort_hours = duration_hours_total >= 10,
     flag_breeeding_season_coverage = breeding_season_months_covered >= 3,
     flag_nocturnal_coverage = nocturnal_species_coded >= 2 |
       duration_hours_nocturnal >= 2
@@ -208,7 +208,7 @@ completion_table <- block_summary |>
       flag_confirmed_pct &
       flag_possible_pct &
       flag_coded_atlas_comparison &
-      flag_20_effort_hours &
+      flag_10_effort_hours &
       flag_breeeding_season_coverage &
       flag_nocturnal_coverage
   ) |>
@@ -736,7 +736,7 @@ server <- function(input, output, session) {
           headerStyle = grouped_col_style
         ),
         flag_possible_pct = colDef(
-          "Possible % < 25%",
+          "Possible % <= 50%",
           filterable = TRUE,
           headerStyle = grouped_col_style
         ),
@@ -745,8 +745,8 @@ server <- function(input, output, session) {
           filterable = TRUE,
           headerStyle = grouped_col_style
         ),
-        flag_20_effort_hours = colDef(
-          name = ">= 20 effort hours",
+        flag_10_effort_hours = colDef(
+          name = ">= 10 effort hours",
           filterable = TRUE,
           headerStyle = grouped_col_style
         ),
@@ -769,7 +769,7 @@ server <- function(input, output, session) {
             "flag_confirmed_pct",
             "flag_possible_pct",
             "flag_coded_atlas_comparison",
-            "flag_20_effort_hours",
+            "flag_10_effort_hours",
             "flag_breeeding_season_coverage",
             "flag_nocturnal_coverage"
           )
