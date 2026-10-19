@@ -179,6 +179,36 @@ missing_pba2_breeding_category_obs <- read_parquet(
   "data/missing_pba2_breeding_category_obs.parquet"
 )
 
+coalesce_nan <- function(x) {
+  ifelse(is.nan(x), 0, x)
+}
+
+block_summary |>
+  filter(season == "All seasons") |>
+  st_drop_geometry() |>
+  as_tibble() |>
+  drop_na(pba3_block) |>
+  arrange(block_region, block_county, block_name) |>
+  replace_na(list(Observed = 0, Possible = 0, Probable = 0, Confirmed = 0)) |>
+  mutate(
+    species_coded = Possible + Probable + Confirmed,
+    possible_pct = Possible / species_coded,
+    probable_pct = Probable / species_coded,
+    confirmed_pct = Confirmed / species_coded
+  ) |>
+  mutate(across(c(possible_pct, probable_pct, confirmed_pct), coalesce_nan)) |>
+  mutate(
+    flag_coded_species = species_coded >= 70,
+    flag_confirmed_pct = confirmed_pct >= .25,
+    flag_possible_pct = possible_pct <= .5,
+    flag_coded_atlas_comparison = pba3_pba2_coded_count_compare_pct >= .8,
+    flag_10_effort_hours = duration_hours_total >= 10,
+    flag_breeeding_season_coverage = breeding_season_months_covered >= 3,
+    flag_nocturnal_coverage = nocturnal_species_coded >= 2 |
+      duration_hours_nocturnal >= 2
+  ) |>
+  view()
+
 completion_table <- block_summary |>
   filter(season == "All seasons") |>
   st_drop_geometry() |>
@@ -192,6 +222,7 @@ completion_table <- block_summary |>
     probable_pct = Probable / species_coded,
     confirmed_pct = Confirmed / species_coded
   ) |>
+  mutate(across(c(possible_pct, probable_pct, confirmed_pct), coalesce_nan)) |>
   mutate(
     flag_coded_species = species_coded >= 70,
     flag_confirmed_pct = confirmed_pct >= .25,
