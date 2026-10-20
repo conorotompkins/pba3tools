@@ -7,7 +7,7 @@ library(arrow)
 
 source("R/year_month_to_last_date.R")
 
-auk_file <- "data/ebd_US-PA_202401_202608_smp_relAug-2026/ebd_US-PA_202401_202608_smp_relAug-2026.txt"
+auk_file <- "data/ebd_US-PA_202401_202609_smp_relSep-2026/ebd_US-PA_202401_202609_smp_relSep-2026.txt"
 
 file.exists(auk_file) == TRUE
 
@@ -40,7 +40,7 @@ ebd <- auk_file |>
   # 4. read text file into r data frame
   read_ebd()
 toc()
-# 1041.117 sec elapsed
+# 1516.202 sec elapsed
 
 glimpse(ebd)
 
