@@ -80,9 +80,9 @@ test_that("calc_species_coded keeps the max breeding rank per species and pivots
     result,
     tibble(
       pba3_block = c("A", "B"),
-      Confirmed = c(1L, NA_integer_),
-      Possible = c(1L, NA_integer_),
-      Probable = c(NA_integer_, 1L)
+      Confirmed = c(1L, 0),
+      Possible = c(1L, 0),
+      Probable = c(0, 1L)
     )
   )
 })
