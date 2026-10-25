@@ -436,6 +436,7 @@ pba2_breeding_rank_max <- pbba2_df |>
   )
 
 pba3_breeding_rank_max <- ebd_df |>
+  filter(!is.na(pba3_block)) |>
   semi_join(
     seasons |> filter(season == "Breeding"),
     by = c("observation_month" = "month")
@@ -557,23 +558,23 @@ all_seasons_test <- summarize_season(
   nocturnal_species = nocturnal_species
 )
 
-view(all_seasons_test)
+#view(all_seasons_test)
 
-all_seasons_test |>
-  filter(pba3_block == "40080D1SE") |>
-  glimpse()
+# all_seasons_test |>
+#   filter(pba3_block == "40080D1SE") |>
+#   glimpse()
 
-all_seasons_test |>
-  filter(pba3_block == "40080D1SE") |>
-  select(effort_breakdown) |>
-  unnest(effort_breakdown) |>
-  mutate(
-    observation_month = month(observation_date, label = TRUE, abbr = TRUE)
-  ) |>
-  summarize(
-    across(starts_with("duration"), \(x) sum(x, na.rm = TRUE)),
-    .by = observation_month
-  )
+# all_seasons_test |>
+#   filter(pba3_block == "40080D1SE") |>
+#   select(effort_breakdown) |>
+#   unnest(effort_breakdown) |>
+#   mutate(
+#     observation_month = month(observation_date, label = TRUE, abbr = TRUE)
+#   ) |>
+#   summarize(
+#     across(starts_with("duration"), \(x) sum(x, na.rm = TRUE)),
+#     .by = observation_month
+#   )
 
 season_summaries <- map(
   set_names(c("All seasons", "Breeding", "Winter")),
