@@ -183,8 +183,8 @@ coalesce_nan <- function(x) {
   ifelse(is.nan(x), 0, x)
 }
 
-block_summary |>
-  filter(season == "All seasons") |>
+completion_table_breeding <- block_summary |>
+  filter(season == "Breeding") |>
   st_drop_geometry() |>
   as_tibble() |>
   drop_na(pba3_block) |>
@@ -196,20 +196,22 @@ block_summary |>
     probable_pct = Probable / species_coded,
     confirmed_pct = Confirmed / species_coded
   ) |>
-  mutate(across(c(possible_pct, probable_pct, confirmed_pct), coalesce_nan)) |>
+  mutate(across(
+    c(possible_pct, probable_pct, confirmed_pct),
+    coalesce_nan
+  )) |>
   mutate(
-    flag_coded_species = species_coded >= 70,
-    flag_confirmed_pct = confirmed_pct >= .25,
-    flag_possible_pct = possible_pct <= .5,
-    flag_coded_atlas_comparison = pba3_pba2_coded_count_compare_pct >= .8,
-    flag_10_effort_hours = duration_hours_total >= 10,
     flag_breeeding_season_coverage = breeding_season_months_covered >= 3,
-    flag_nocturnal_coverage = nocturnal_species_coded >= 2 |
-      duration_hours_nocturnal >= 2
+    flag_coded_atlas_comparison = pba3_pba2_coded_count_compare_pct >= .8, #only for breeding season
   ) |>
-  view()
+  select(
+    pba3_block,
+    flag_breeeding_season_coverage,
+    flag_coded_atlas_comparison
+  ) |>
+  collect()
 
-completion_table <- block_summary |>
+completion_table_all_seasons <- block_summary |>
   filter(season == "All seasons") |>
   st_drop_geometry() |>
   as_tibble() |>
@@ -222,18 +224,28 @@ completion_table <- block_summary |>
     probable_pct = Probable / species_coded,
     confirmed_pct = Confirmed / species_coded
   ) |>
-  mutate(across(c(possible_pct, probable_pct, confirmed_pct), coalesce_nan)) |>
+  mutate(across(
+    c(possible_pct, probable_pct, confirmed_pct),
+    coalesce_nan
+  )) |>
   mutate(
     flag_coded_species = species_coded >= 70,
     flag_confirmed_pct = confirmed_pct >= .25,
     flag_possible_pct = possible_pct <= .5,
-    flag_coded_atlas_comparison = pba3_pba2_coded_count_compare_pct >= .8,
     flag_10_effort_hours = duration_hours_total >= 10,
-    flag_breeeding_season_coverage = breeding_season_months_covered >= 3,
     flag_nocturnal_coverage = nocturnal_species_coded >= 2 |
       duration_hours_nocturnal >= 2
   ) |>
+  select(pba3_block, block_name, block_county, starts_with("flag")) |>
+  collect()
+
+completion_table <- left_join(
+  completion_table_all_seasons,
+  completion_table_breeding,
+  by = "pba3_block"
+) |>
   rowwise() |>
+  mutate(sum_criteria_complete = sum(pick(starts_with("flag")))) |>
   mutate(
     all_criteria_complete = flag_coded_species &
       flag_confirmed_pct &
@@ -249,9 +261,11 @@ completion_table <- block_summary |>
     block_name,
     block_county,
     all_criteria_complete,
+    sum_criteria_complete,
     starts_with("flag")
-  ) |>
-  collect()
+  )
+
+# now only low-effort blocks are showing data issues
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output, session) {
@@ -753,6 +767,11 @@ server <- function(input, output, session) {
         ),
         all_criteria_complete = colDef(
           name = "All criteria complete",
+          filterable = TRUE,
+          minWidth = 100
+        ),
+        sum_criteria_complete = colDef(
+          name = "# criteria complete",
           filterable = TRUE,
           minWidth = 100
         ),
