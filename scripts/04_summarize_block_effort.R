@@ -219,9 +219,9 @@ pba3_centroids <- checklist_pba3_block |>
   st_convex_hull() |>
   st_point_on_surface()
 
-pba3_centroids |>
-  ggplot() +
-  geom_sf(size = .5)
+# pba3_centroids |>
+#   ggplot() +
+#   geom_sf(size = .5)
 
 #join pba2 blocks with pba3 centroids
 tic()
@@ -289,57 +289,56 @@ pba3_block_mismatch
 checklist_pba3_block |>
   filter(pba3_block == "40075F2SE")
 
-maplibre(
-  bounds = checklist_pba3_block |>
-    filter(pba3_block == "40075F2SE")
-) |>
-  add_fill_layer(
-    id = "pba2_blocks",
-    source = pba2_blocks,
-    fill_color = "blue",
-    fill_opacity = .2,
-    tooltip = "pba2_block"
-  ) |>
-  add_circle_layer(
-    id = "checklists",
-    source = checklist_pba3_block |>
-      filter(pba3_block == "40075F2SE")
-  )
+# maplibre(
+#   bounds = checklist_pba3_block |>
+#     filter(pba3_block == "40075F2SE")
+# ) |>
+#   add_fill_layer(
+#     id = "pba2_blocks",
+#     source = pba2_blocks,
+#     fill_color = "blue",
+#     fill_opacity = .2,
+#     tooltip = "pba2_block"
+#   ) |>
+#   add_circle_layer(
+#     id = "checklists",
+#     source = checklist_pba3_block |>
+#       filter(pba3_block == "40075F2SE")
+#   )
 
 block_checklist_geo |>
   filter(pba3_block == "40075F2SE")
 
-maplibre(
-  bounds = checklist_pba3_block |>
-    filter(pba3_block == "40075F2SE")
-) |>
-  add_fill_layer(
-    id = "pba2_blocks",
-    source = block_checklist_geo,
-    fill_color = "blue",
-    fill_opacity = .2,
-    tooltip = "pba2_block"
-  ) |>
-  add_symbol_layer(
-    id = "pba2_block_id",
-    source = block_checklist_geo,
-    text_field = get_column("pba2_block")
-  ) |>
-  add_circle_layer(
-    id = "pba3_centroids",
-    source = pba3_centroids,
-    circle_radius = 6,
-    circle_color = "red",
-    tooltip = "pba3_block"
-  ) |>
-  add_circle_layer(
-    id = "checklists",
-    source = checklist_pba3_block |>
-      filter(pba3_block == "40075F2SE"),
-    circle_radius = 4,
-    circle_color = "yellow"
-  )
-
+# maplibre(
+#   bounds = checklist_pba3_block |>
+#     filter(pba3_block == "40075F2SE")
+# ) |>
+#   add_fill_layer(
+#     id = "pba2_blocks",
+#     source = block_checklist_geo,
+#     fill_color = "blue",
+#     fill_opacity = .2,
+#     tooltip = "pba2_block"
+#   ) |>
+#   add_symbol_layer(
+#     id = "pba2_block_id",
+#     source = block_checklist_geo,
+#     text_field = get_column("pba2_block")
+#   ) |>
+#   add_circle_layer(
+#     id = "pba3_centroids",
+#     source = pba3_centroids,
+#     circle_radius = 6,
+#     circle_color = "red",
+#     tooltip = "pba3_block"
+#   ) |>
+#   add_circle_layer(
+#     id = "checklists",
+#     source = checklist_pba3_block |>
+#       filter(pba3_block == "40075F2SE"),
+#     circle_radius = 4,
+#     circle_color = "yellow"
+#   )
 
 # ggplot() +
 #   geom_sf(
@@ -437,6 +436,7 @@ pba2_breeding_rank_max <- pbba2_df |>
   )
 
 pba3_breeding_rank_max <- ebd_df |>
+  filter(!is.na(pba3_block)) |>
   semi_join(
     seasons |> filter(season == "Breeding"),
     by = c("observation_month" = "month")
@@ -546,11 +546,11 @@ atlas_block_comparison <- atlas_max_breeding_rank_comparison |>
   arrange(desc(species_count_pba3)) |>
   mutate(season = "Breeding")
 
-atlas_block_comparison |>
-  write_parquet("data/atlas_block_comparison.parquet")
+# atlas_block_comparison |>
+#   write_parquet("data/atlas_block_comparison.parquet")
 
 #summary metrics by season
-x <- summarize_season(
+all_seasons_test <- summarize_season(
   checklist_df = ebd_df,
   season_filter = "All seasons",
   ob_dt_fixed = ob_dt_fixed,
@@ -558,21 +558,23 @@ x <- summarize_season(
   nocturnal_species = nocturnal_species
 )
 
-x |>
-  filter(pba3_block == "40080D1SE") |>
-  glimpse()
+#view(all_seasons_test)
 
-x |>
-  filter(pba3_block == "40080D1SE") |>
-  select(effort_breakdown) |>
-  unnest(effort_breakdown) |>
-  mutate(
-    observation_month = month(observation_date, label = TRUE, abbr = TRUE)
-  ) |>
-  summarize(
-    across(starts_with("duration"), \(x) sum(x, na.rm = TRUE)),
-    .by = observation_month
-  )
+# all_seasons_test |>
+#   filter(pba3_block == "40080D1SE") |>
+#   glimpse()
+
+# all_seasons_test |>
+#   filter(pba3_block == "40080D1SE") |>
+#   select(effort_breakdown) |>
+#   unnest(effort_breakdown) |>
+#   mutate(
+#     observation_month = month(observation_date, label = TRUE, abbr = TRUE)
+#   ) |>
+#   summarize(
+#     across(starts_with("duration"), \(x) sum(x, na.rm = TRUE)),
+#     .by = observation_month
+#   )
 
 season_summaries <- map(
   set_names(c("All seasons", "Breeding", "Winter")),
@@ -622,6 +624,9 @@ block_summary_seasons <- block_summary_seasons |>
 
 glimpse(block_summary_seasons)
 
+block_summary_seasons |>
+  filter(if_any(c(Observed, Possible, Probable, Confirmed), is.na))
+
 # block_checklist_geo |>
 #   filter(row_number() == 2)
 
@@ -637,17 +642,17 @@ glimpse(block_summary_seasons)
 # block_summary_seasons |>
 #   slice_head(n = 1)
 
-block_summary_seasons |>
-  filter(season == "All seasons") |>
-  select(-effort_breakdown) |>
-  maplibre_view(column = "duration_hours_diurnal")
+# block_summary_seasons |>
+#   filter(season == "All seasons") |>
+#   select(-effort_breakdown) |>
+#   maplibre_view(column = "duration_hours_diurnal")
 
-block_summary_seasons |>
-  ggplot() +
-  geom_sf(aes(fill = Confirmed)) +
-  scale_fill_viridis_c() +
-  facet_wrap(vars(season), ncol = 1) +
-  theme_bw()
+# block_summary_seasons |>
+#   ggplot() +
+#   geom_sf(aes(fill = Confirmed)) +
+#   scale_fill_viridis_c() +
+#   facet_wrap(vars(season), ncol = 1) +
+#   theme_bw()
 
 write_parquet(block_summary_seasons, "data/block_summary_seasons.parquet")
 

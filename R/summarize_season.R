@@ -118,7 +118,7 @@ calc_block_effort <- function(x) {
 #' For each species observed in a block, keeps only its highest-ranked
 #' breeding code (via `breeding_rank`) and tallies how many species reached
 #' each `breeding_category_desc` (e.g. "Observed", "Possible", "Probable",
-#' "Confirmed").
+#' "Confirmed"). NAs coalesce to 0.
 #'
 #' @param x A dataframe (or lazy tbl) of eBird checklists generated via auk,
 #'   containing `pba3_block`, `common_name`, `breeding_category_desc`, and
@@ -138,7 +138,11 @@ calc_species_coded <- function(x) {
     ungroup() |>
     count(pba3_block, breeding_category_desc, breeding_rank) |>
     select(-breeding_rank) |>
-    pivot_wider(names_from = breeding_category_desc, values_from = n)
+    pivot_wider(names_from = breeding_category_desc, values_from = n) |>
+    mutate(across(
+      any_of(c("Observed", "Possible", "Probable", "Confirmed")),
+      ~ coalesce(.x, 0)
+    ))
 }
 
 #' Classify and summarize checklist effort as diurnal or nocturnal
