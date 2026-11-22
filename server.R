@@ -705,7 +705,7 @@ server <- function(input, output, session) {
     req(input$report_block_id, input$report_season)
 
     x <- effort_breakdown |>
-      filter(pba3_block == "40080D1SE") |>
+      filter(pba3_block == input$report_block_id) |>
       mutate(
         obs_ym = yearmonth(observation_date),
         obs_year = year(observation_date),
@@ -736,7 +736,8 @@ server <- function(input, output, session) {
       facet_wrap(vars(str_c(facet_label, ": ", obs_year, sep = "")), ncol = 1) +
       scale_y_continuous(expand = expansion(mult = .2)) +
       labs(title = "Effort hours across time", x = "Date", y = "Effort") +
-      theme_bw(base_size = 18)
+      theme_bw(base_size = 18) +
+      theme(panel.grid.minor = element_blank())
   })
 
   output$block_completion_table <- renderReactable({
